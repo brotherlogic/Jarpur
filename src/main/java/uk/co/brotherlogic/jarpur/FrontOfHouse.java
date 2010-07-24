@@ -66,15 +66,18 @@ public class FrontOfHouse extends HttpServlet {
 	private String search(String path, List<String> params, Map<String,String> paramMap)
 	{
 		String className = JarpurProperties.get("base") + "." + path.replace("/", ".");
-		System.err.println(className);
+		while (className.endsWith("."))
+			className = className.substring(0,className.length()-1);
+		System.err.println("PROB:" + className);
 		
 		//Build on Default
-		String defaultClass = className.trim() + "Default";
+		String defaultClass = className.trim() + ".Default";
 		String res = build(defaultClass,params,paramMap);
 		if (res != null)
 			return res;
 		
 		String[] pathElems = path.split("/");
+		System.err.println("CLASS = " + JarpurProperties.get("base"));
 		className = JarpurProperties.get("base") + "." + path.substring(0,path.length()-pathElems[pathElems.length-1].length()-1).replace("/", ".");
 		String nClass = className.trim() + capitalize(pathElems[pathElems.length-1]);
 		res = build(nClass,params,paramMap);
@@ -95,13 +98,14 @@ public class FrontOfHouse extends HttpServlet {
 	{
 		try
 		{
+			System.err.println("BUILDING: " + className);
 			Class cls = Class.forName(className);
 			Page pg = (Page)cls.getConstructor(new Class[0]).newInstance(new Object[0]);
 			return pg.generate(params, paramMap);
 		}
 		catch (Exception e)
 		{
-			System.err.println("SKIPPING:" + className);
+			System.err.println("SKIPPING:" + className + " (" + e.getLocalizedMessage() + ")");
 		}
 		
 		return null;
