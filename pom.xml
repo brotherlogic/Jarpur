@@ -6,6 +6,21 @@
   <version>0.3-SNAPSHOT</version>
   <name>jarpur</name>
   <url>http://maven.apache.org</url>
+  
+  <distributionManagement>
+    <repository>
+      <id>edip</id>
+      <name>edip-releases</name>
+      <url>http://edip:8085/artifactory/libs-releases-local</url>
+    </repository>
+    <snapshotRepository>
+        <id>edip</id>
+        <name>edip-snapshots</name>
+        <url>http://edip:8085/artifactory/libs-snapshots-local</url>
+    </snapshotRepository>
+  </distributionManagement>
+  
+  
   <dependencies>
     <dependency>
       <groupId>junit</groupId>

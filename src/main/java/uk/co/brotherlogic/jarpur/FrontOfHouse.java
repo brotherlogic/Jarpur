@@ -78,6 +78,7 @@ public class FrontOfHouse extends HttpServlet {
 		
 		String[] pathElems = path.split("/");
 		System.err.println("CLASS = " + JarpurProperties.get("base"));
+		System.err.println("PATH = " + path);
 		className = JarpurProperties.get("base") + "." + path.substring(0,path.length()-pathElems[pathElems.length-1].length()-1).replace("/", ".");
 		String nClass = className.trim() + capitalize(pathElems[pathElems.length-1]);
 		res = build(nClass,params,paramMap);
@@ -105,6 +106,7 @@ public class FrontOfHouse extends HttpServlet {
 		}
 		catch (Exception e)
 		{
+			e.printStackTrace();
 			System.err.println("SKIPPING:" + className + " (" + e.getLocalizedMessage() + ")");
 		}
 		
