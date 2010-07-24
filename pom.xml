@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>uk.co.brotherlogic.jarpur</groupId>
   <artifactId>jarpur</artifactId>
-  <packaging>war</packaging>
+  <packaging>jar</packaging>
   <version>0.3-SNAPSHOT</version>
   <name>jarpur</name>
   <url>http://maven.apache.org</url>
