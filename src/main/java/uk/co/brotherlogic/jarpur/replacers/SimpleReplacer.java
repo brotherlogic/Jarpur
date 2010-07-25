@@ -12,7 +12,6 @@ public class SimpleReplacer extends Replacer {
 	@Override
 	public String process(Object ref, Map<String, Object> objectMap) {
 
-<<<<<<< HEAD
 		System.err.println("PROC: " + LinkTable.getLinkTable());
 
 		if (replacement.startsWith("link")) {
@@ -21,16 +20,9 @@ public class SimpleReplacer extends Replacer {
 					+ LinkTable.getLinkTable());
 			return LinkTable.getLinkTable().resolveLink(
 					resolve(replacement.substring(5), objectMap));
-=======
-		if (replacement.startsWith("link:resource"))
-			return LinkTable.add + replacement.substring(5);
-
-		if (replacement.startsWith("link")) {
-			return lTable.resolveLink(resolve(replacement.substring(5),
-					objectMap));
->>>>>>> 09eca6a4a3b0c097c978277ed3f41ce5b7d36bd5
 		}
 
+		System.err.println(replacement + " => " + objectMap.size());
 		Object obj = resolve(replacement, objectMap);
 
 		if (obj instanceof Calendar) {
@@ -43,8 +35,7 @@ public class SimpleReplacer extends Replacer {
 
 	private final String replacement;
 
-	public SimpleReplacer(Object pg, String replacerText) {
-		setRefObj(pg);
+	public SimpleReplacer(String replacerText) {
 		replacement = replacerText;
 	}
 
