@@ -89,7 +89,7 @@ public class PageParser {
 					}
 				}
 			} else {
-				allReplacements.addReplacer(new SimpleReplacer(ref, paramText
+				allReplacements.addReplacer(new SimpleReplacer(paramText
 						.substring(2, paramText.length() - 2)));
 				startPoint += paramText.length();
 			}
