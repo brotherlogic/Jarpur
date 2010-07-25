@@ -13,7 +13,6 @@ import java.util.regex.Pattern;
 
 public class LinkTable {
 
-	public static String add = "/jarpur/";
 	Map<String, String> links = new TreeMap<String, String>();
 
 	private static LinkTable singleton;
@@ -30,8 +29,8 @@ public class LinkTable {
 			properties
 					.load(new FileInputStream(new File("mapping.properties")));
 			for (Entry<Object, Object> entry : properties.entrySet()) {
-				links.put(entry.getKey().toString(), entry.getValue()
-						.toString());
+				String ref = entry.getValue().toString();
+				links.put(entry.getKey().toString(), ref);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -59,9 +58,22 @@ public class LinkTable {
 					new Object[0]);
 			String params = pg.linkParams(o);
 
-			return JarpurProperties.get("web") + "/"
-					+ ref.substring(JarpurProperties.get("base").length() + 1)
-					+ "/" + params;
+			String nref = ref
+					.substring(JarpurProperties.get("base").length() + 1);
+
+			// Convert to a link
+			nref.replace(".", "/");
+			System.err.println("NREF: " + nref);
+
+			// Remove any Default
+			if (nref.endsWith("Default"))
+				nref = nref
+						.substring(0, nref.length() - "Default".length() - 1);
+			else if (ref.endsWith("Default/"))
+				nref = nref.substring(0, nref.length() - "Default/".length()
+						- 1);
+
+			return JarpurProperties.get("web") + "/" + nref + "/" + params;
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		} catch (IllegalArgumentException e) {
