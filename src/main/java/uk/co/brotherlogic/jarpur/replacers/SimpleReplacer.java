@@ -9,16 +9,10 @@ import uk.co.brotherlogic.jarpur.LinkTable;
 
 public class SimpleReplacer extends Replacer {
 
-	private static LinkTable lTable;
-
-	public static void setLinkTable(LinkTable table) {
-		lTable = table;
-	}
-
 	@Override
 	public String process(Object ref, Map<String, Object> objectMap) {
 
-		System.err.println("PROC: " + lTable);
+		System.err.println("PROC: " + LinkTable.getLinkTable());
 
 		if (replacement.startsWith("link:resource"))
 			return LinkTable.add + replacement.substring(5);
@@ -26,9 +20,9 @@ public class SimpleReplacer extends Replacer {
 		if (replacement.startsWith("link")) {
 			System.err.println("LINK: " + replacement.substring(5) + " => "
 					+ resolve(replacement.substring(5), objectMap) + " give "
-					+ lTable);
-			return lTable.resolveLink(resolve(replacement.substring(5),
-					objectMap));
+					+ LinkTable.getLinkTable());
+			return LinkTable.getLinkTable().resolveLink(
+					resolve(replacement.substring(5), objectMap));
 		}
 
 		System.err.println(replacement + " => " + objectMap.size());

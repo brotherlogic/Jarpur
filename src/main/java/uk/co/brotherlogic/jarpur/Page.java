@@ -7,5 +7,7 @@ import java.util.Map;
 public abstract class Page {
 	
 	public abstract String generate(List<String> paramList, Map<String,String> paramMap) throws IOException;
+	public abstract Class generates();
+	public abstract String linkParams(Object o);
 	
 }
