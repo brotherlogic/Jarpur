@@ -32,8 +32,8 @@ public class JarpurProperties {
 						.getRealPath("WEB-INF/props/web.properties"))));
 				System.err.println("LOADED");
 			} else
-				properties
-						.load(new FileInputStream(new File("web.properties")));
+				properties.load(new FileInputStream(new File(
+						"config/web.properties")));
 		} catch (IOException e) {
 			// Try to read the file from within the war
 			if (context != null)

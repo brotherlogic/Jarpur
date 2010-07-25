@@ -37,8 +37,8 @@ public class FrontOfHouse extends HttpServlet {
 		// Prepare the properties
 		JarpurProperties.set(this.getServletContext());
 		LinkTable.getLinkTable(this.getServletContext().getRealPath("/")
-				+ "WEB-INF/");
-		Page.setBase(this.getServletContext().getRealPath("/") + "WEB-INF/");
+				+ "/WEB-INF/");
+		Page.setBase(this.getServletContext().getRealPath("/") + "/WEB-INF/");
 
 		// Get the path and drop off the leading / and add a trailing one if not
 		// already there
