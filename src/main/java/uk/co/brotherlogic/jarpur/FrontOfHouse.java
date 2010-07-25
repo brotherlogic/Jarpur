@@ -127,7 +127,6 @@ public class FrontOfHouse extends HttpServlet {
 			System.err.println("SKIPPING:" + className + " ("
 					+ e.getLocalizedMessage() + ")");
 		}
-
 		return null;
 	}
 }
