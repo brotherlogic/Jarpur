@@ -34,6 +34,12 @@ public class FrontOfHouse extends HttpServlet {
 	public void doGet(HttpServletRequest req, HttpServletResponse res)
 			throws IOException, ServletException {
 
+		// Prepare the properties
+		JarpurProperties.set(this.getServletContext());
+		LinkTable.getLinkTable(this.getServletContext().getRealPath("/")
+				+ "WEB-INF/");
+		Page.setBase(this.getServletContext().getRealPath("/") + "WEB-INF/");
+
 		// Get the path and drop off the leading / and add a trailing one if not
 		// already there
 		String path = req.getPathInfo().substring(1);
@@ -45,7 +51,8 @@ public class FrontOfHouse extends HttpServlet {
 		String page = "";
 		if (path.startsWith("resources")) {
 			BufferedReader reader = new BufferedReader(new FileReader(new File(
-					path)));
+					this.getServletContext().getRealPath("/WEB-INF/") + "/"
+							+ path)));
 			for (String line = reader.readLine(); line != null; line = reader
 					.readLine())
 				page += line;

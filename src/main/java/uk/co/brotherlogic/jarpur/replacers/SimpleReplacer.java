@@ -14,9 +14,6 @@ public class SimpleReplacer extends Replacer {
 
 		System.err.println("PROC: " + LinkTable.getLinkTable());
 
-		if (replacement.startsWith("link:resource"))
-			return LinkTable.add + replacement.substring(5);
-
 		if (replacement.startsWith("link")) {
 			System.err.println("LINK: " + replacement.substring(5) + " => "
 					+ resolve(replacement.substring(5), objectMap) + " give "

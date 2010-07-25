@@ -1,11 +1,8 @@
 package uk.co.brotherlogic.jarpur;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.text.DateFormat;
@@ -16,30 +13,34 @@ import java.util.regex.Pattern;
 
 import uk.co.brotherlogic.jarpur.replacers.Replacer;
 
-public abstract class TemplatePage extends Page{
-	
+public abstract class TemplatePage extends Page {
+
 	Pattern percMatcher = Pattern.compile("(\\%\\%.*?\\%\\%)");
 
 	DateFormat df = DateFormat.getDateInstance();
 
-	protected abstract Map<String,Object> convertParams(List<String> paramList, Map<String,String> paramMap);
-	
-	public String generate(List<String> paramList, Map<String,String> paramMap)
+	protected abstract Map<String, Object> convertParams(
+			List<String> paramList, Map<String, String> paramMap);
+
+	@Override
+	public String generate(List<String> paramList, Map<String, String> paramMap)
 			throws IOException {
-		
+
 		String className = this.getClass().getCanonicalName();
 
 		// Build the template
 		StringBuffer template_data = new StringBuffer();
 		BufferedReader reader;
-			reader = new BufferedReader(new FileReader("src/main/java/" + "/"
-					+ className.replace(".", "/") + ".html"));
+		System.err.println("GENERATE");
+		reader = new BufferedReader(new FileReader(base
+				+ className.replace(".", "/") + ".html"));
 		for (String line = reader.readLine(); line != null; line = reader
 				.readLine())
 			template_data.append(line + "\n");
 
 		// Apply the template
-		return doReplace(template_data.toString(), convertParams(paramList, paramMap));
+		return doReplace(template_data.toString(), convertParams(paramList,
+				paramMap));
 	}
 
 	protected Object resolveMethodWithParameter(Object obj, String methodName,

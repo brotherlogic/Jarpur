@@ -19,15 +19,21 @@ public class LinkTable {
 
 	public static LinkTable getLinkTable() {
 		if (singleton == null)
-			singleton = new LinkTable();
+			singleton = new LinkTable("");
 		return singleton;
 	}
 
-	private LinkTable() {
+	public static LinkTable getLinkTable(String base) {
+		if (singleton == null)
+			singleton = new LinkTable(base);
+		return singleton;
+	}
+
+	private LinkTable(String base) {
 		Properties properties = new Properties();
 		try {
-			properties
-					.load(new FileInputStream(new File("mapping.properties")));
+			properties.load(new FileInputStream(base + "props/"
+					+ new File("mapping.properties")));
 			for (Entry<Object, Object> entry : properties.entrySet()) {
 				String ref = entry.getValue().toString();
 				links.put(entry.getKey().toString(), ref);
