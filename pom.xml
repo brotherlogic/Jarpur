@@ -14,9 +14,9 @@
       <url>http://edip:8085/artifactory/libs-releases-local</url>
     </repository>
     <snapshotRepository>
-        <id>edip</id>
-        <name>edip-snapshots</name>
-        <url>http://edip:8085/artifactory/libs-snapshots-local</url>
+      <id>edip</id>
+      <name>edip-snapshots</name>
+      <url>http://edip:8085/artifactory/libs-snapshots-local</url>
     </snapshotRepository>
   </distributionManagement>
   
@@ -46,20 +46,6 @@
     <connection>scm:git:git://github.com/BrotherLogic/Jarpur.git</connection>
     <url>scm:git:git://github.com/BrotherLogic/Jarpur.git</url>
   </scm>
-
-<distributionManagement>
-    <repository>
-      <id>edip</id>
-      <name>edip-releases</name>
-      <url>http://edip:8085/artifactory/libs-releases-local</url>
-    </repository>
-    <snapshotRepository>
-        <id>edip</id>
-        <name>edip-snapshots</name>
-        <url>http://edip:8085/artifactory/libs-snapshots-local</url>
-    </snapshotRepository>
-  </distributionManagement>
-
 
 <build>
     <finalName>jarpur</finalName>
