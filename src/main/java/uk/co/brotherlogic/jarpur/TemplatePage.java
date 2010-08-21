@@ -143,7 +143,6 @@ public abstract class TemplatePage extends Page {
 	protected String doReplace(String pageText, Map<String, Object> paramMap) {
 		PageParser parser = new PageParser();
 		Replacer repl = parser.parsePage(this, pageText);
-		repl.print("");
 		return repl.process(this, paramMap);
 	}
 

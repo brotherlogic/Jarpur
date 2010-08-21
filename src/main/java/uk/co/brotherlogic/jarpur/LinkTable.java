@@ -102,6 +102,7 @@ public class LinkTable {
 			e.printStackTrace();
 		}
 		return "";
+
 	}
 
 	protected String resolveMethod(Object obj, String methodName) {
