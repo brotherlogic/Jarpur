@@ -12,17 +12,13 @@ public class SimpleReplacer extends Replacer {
 	@Override
 	public String process(Object ref, Map<String, Object> objectMap) {
 
-		System.err.println("PROC: " + LinkTable.getLinkTable());
+		setRefObj(ref);
 
 		if (replacement.startsWith("link")) {
-			System.err.println("LINK: " + replacement.substring(5) + " => "
-					+ resolve(replacement.substring(5), objectMap) + " give "
-					+ LinkTable.getLinkTable());
 			return LinkTable.getLinkTable().resolveLink(
 					resolve(replacement.substring(5), objectMap));
 		}
 
-		System.err.println(replacement + " => " + objectMap.size());
 		Object obj = resolve(replacement, objectMap);
 
 		if (obj instanceof Calendar) {

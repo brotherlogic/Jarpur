@@ -20,6 +20,7 @@ public abstract class Replacer {
 	}
 
 	public String process(Object ref, Map<String, Object> objectMap) {
+		System.err.println("REPLACING: " + this.getClass() + " => " + ref);
 		refObj = ref;
 		StringBuffer buffer = new StringBuffer();
 		for (Replacer repl : replacers) {
@@ -70,6 +71,13 @@ public abstract class Replacer {
 
 	protected Object resolveMethod(Object obj, String methodName,
 			Map<String, Object> paramMap) {
+
+		if (obj != null)
+			System.err.println("Resolving " + obj.getClass() + " with method "
+					+ methodName);
+		else
+			System.err.println("Resolving " + obj + " with method "
+					+ methodName);
 
 		if (methodName.contains("("))
 			return resolveMethodWithParameter(obj, methodName, paramMap);

@@ -24,7 +24,6 @@ public class JarpurProperties {
 	}
 
 	private static void buildProperties(ServletContext context) {
-		System.err.println("BEING BUILT: " + context);
 		properties = new Properties();
 		try {
 			if (context != null) {
@@ -36,14 +35,6 @@ public class JarpurProperties {
 						"config/web.properties")));
 		} catch (IOException e) {
 			// Try to read the file from within the war
-			if (context != null)
-				System.err
-						.println("FILE = "
-								+ new File(context
-										.getRealPath("props/web.properties")));
-			else
-				System.err.println("FILE = "
-						+ new File("web.properties").getAbsolutePath());
 			e.printStackTrace();
 			properties = null;
 		}

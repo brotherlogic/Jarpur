@@ -9,6 +9,8 @@ import java.io.PrintStream;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
+import java.util.Map.Entry;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -46,13 +48,11 @@ public class FrontOfHouse extends HttpServlet {
 		if (!path.endsWith("/"))
 			path = path + "/";
 
-		System.err.println("SEARCH:" + path + ":");
-
 		String page = "";
-		if (path.startsWith("resources")) {
+		if (path.contains("resources")) {
 			BufferedReader reader = new BufferedReader(new FileReader(new File(
 					this.getServletContext().getRealPath("/WEB-INF/") + "/"
-							+ path)));
+							+ path.substring(path.indexOf("resources")))));
 			for (String line = reader.readLine(); line != null; line = reader
 					.readLine())
 				page += line;
@@ -60,7 +60,7 @@ public class FrontOfHouse extends HttpServlet {
 		} else {
 			// Start searching for the appropriate class
 			List<String> params = new LinkedList<String>();
-			page = search(path, params, req.getParameterMap());
+			page = search(path, params, convertParams(req.getParameterMap()));
 		}
 		// Write out the result
 		OutputStream os = res.getOutputStream();
@@ -73,13 +73,23 @@ public class FrontOfHouse extends HttpServlet {
 		return Character.toUpperCase(in.charAt(0)) + in.substring(1);
 	}
 
+	private Map<String, String> convertParams(Map pMap) {
+		Map<String, String> retMap = new TreeMap<String, String>();
+		for (Object eSet : pMap.entrySet()) {
+			Entry entr = (Entry) eSet;
+			retMap.put((String) entr.getKey(), ((String[]) entr.getValue())[0]);
+		}
+
+		System.err.println("RETMAP: " + retMap);
+		return retMap;
+	}
+
 	private String search(String path, List<String> params,
 			Map<String, String> paramMap) {
 		String className = JarpurProperties.get("base") + "."
 				+ path.replace("/", ".");
 		while (className.endsWith("."))
 			className = className.substring(0, className.length() - 1);
-		System.err.println("PROB:" + className);
 
 		// Build on Default
 		String defaultClass = className.trim() + ".Default";
@@ -88,8 +98,6 @@ public class FrontOfHouse extends HttpServlet {
 			return res;
 
 		String[] pathElems = path.split("/");
-		System.err.println("CLASS = " + JarpurProperties.get("base"));
-		System.err.println("PATH = " + path);
 		className = JarpurProperties.get("base")
 				+ "."
 				+ path.substring(
@@ -121,11 +129,11 @@ public class FrontOfHouse extends HttpServlet {
 			Class cls = Class.forName(className);
 			Page pg = (Page) cls.getConstructor(new Class[0]).newInstance(
 					new Object[0]);
+			System.err.println("BUILT");
 			return pg.generate(params, paramMap);
 		} catch (Exception e) {
+			// Pass
 			e.printStackTrace();
-			System.err.println("SKIPPING:" + className + " ("
-					+ e.getLocalizedMessage() + ")");
 		}
 		return null;
 	}
