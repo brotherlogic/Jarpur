@@ -31,9 +31,9 @@ public abstract class TemplatePage extends Page {
 		// Build the template
 		StringBuffer template_data = new StringBuffer();
 		BufferedReader reader;
-		System.err.println("GENERATE");
-		reader = new BufferedReader(new FileReader(base
-				+ className.replace(".", "/") + ".html"));
+		String fName = base + className.replace(".", "/") + ".html";
+		System.err.println("Reading: " + fName);
+		reader = new BufferedReader(new FileReader(fName));
 		for (String line = reader.readLine(); line != null; line = reader
 				.readLine())
 			template_data.append(line + "\n");
