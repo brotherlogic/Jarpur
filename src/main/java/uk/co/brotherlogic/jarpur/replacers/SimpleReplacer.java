@@ -7,36 +7,47 @@ import java.util.Map;
 
 import uk.co.brotherlogic.jarpur.LinkTable;
 
-public class SimpleReplacer extends Replacer {
+public class SimpleReplacer extends Replacer
+{
 
-	@Override
-	public String process(Object ref, Map<String, Object> objectMap) {
+   @Override
+   public String process(Object ref, Map<String, Object> objectMap)
+   {
 
-		setRefObj(ref);
+      setRefObj(ref);
 
-		if (replacement.startsWith("link")) {
-			return LinkTable.getLinkTable().resolveLink(
-					resolve(replacement.substring(5), objectMap));
-		}
+      if (replacement.startsWith("link"))
+      {
+         return LinkTable.getLinkTable().resolveLink(resolve(replacement.substring(5), objectMap));
+      }
 
-		Object obj = resolve(replacement, objectMap);
+      Object obj = resolve(replacement, objectMap);
 
-		if (obj instanceof Calendar) {
-			DateFormat df = new SimpleDateFormat("dd/MM/yy");
-			return df.format(((Calendar) obj).getTime());
-		}
+      if (obj instanceof Calendar)
+      {
+         DateFormat df = new SimpleDateFormat("dd/MM/yy");
+         return df.format(((Calendar) obj).getTime());
+      }
 
-		return obj.toString();
-	}
+      return obj.toString();
+   }
 
-	private final String replacement;
+   @Override
+   protected String getName()
+   {
+      return "Simple: " + replacement;
+   }
 
-	public SimpleReplacer(String replacerText) {
-		replacement = replacerText;
-	}
+   private final String replacement;
 
-	@Override
-	public String toString() {
-		return "Simple: " + replacement;
-	}
+   public SimpleReplacer(String replacerText)
+   {
+      replacement = replacerText;
+   }
+
+   @Override
+   public String toString()
+   {
+      return "Simple: " + replacement;
+   }
 }
