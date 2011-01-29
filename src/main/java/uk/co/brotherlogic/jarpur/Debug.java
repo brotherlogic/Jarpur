@@ -6,7 +6,7 @@ public class Debug
 
    private static void loadDebug()
    {
-      debug = System.getProperty("jarpur.debug").equalsIgnoreCase("true");
+      debug = System.getProperty("jarpur.debug") != null && System.getProperty("jarpur.debug").equalsIgnoreCase("true");
    }
 
    public static Boolean isDebug()
