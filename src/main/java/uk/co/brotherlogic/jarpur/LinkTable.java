@@ -44,14 +44,10 @@ public class LinkTable {
 	}
 
 	public String resolveLink(Object o) {
-		System.err.println("RESOLVING LINK: " + o);
 		String classname = o.getClass().getCanonicalName();
-		System.err.println("CLASSHNAME: " + classname);
 		if (links.containsKey(classname)) {
-			System.err.println("LINK FOUND:" + links.get(classname));
 			return resolveLink(o, links.get(classname));
-		} else
-			System.err.println("NOT FOUND: " + links.keySet());
+		}
 		return null;
 	}
 
@@ -69,8 +65,6 @@ public class LinkTable {
 
 			// Convert to a link
 			nref.replace(".", "/");
-			System.err.println("NREF: " + nref);
-
 			// Remove any Default
 			if (nref.endsWith("Default"))
 				nref = nref
@@ -102,6 +96,7 @@ public class LinkTable {
 			e.printStackTrace();
 		}
 		return "";
+
 	}
 
 	protected String resolveMethod(Object obj, String methodName) {

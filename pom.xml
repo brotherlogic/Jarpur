@@ -3,7 +3,7 @@
   <groupId>uk.co.brotherlogic.jarpur</groupId>
   <artifactId>jarpur</artifactId>
   <packaging>jar</packaging>
-  <version>0.3-SNAPSHOT</version>
+  <version>0.8-SNAPSHOT</version>
   <name>jarpur</name>
   <url>http://maven.apache.org</url>
   
@@ -14,9 +14,9 @@
       <url>http://edip:8085/artifactory/libs-releases-local</url>
     </repository>
     <snapshotRepository>
-        <id>edip</id>
-        <name>edip-snapshots</name>
-        <url>http://edip:8085/artifactory/libs-snapshots-local</url>
+      <id>edip</id>
+      <name>edip-snapshots</name>
+      <url>http://edip:8085/artifactory/libs-snapshots-local</url>
     </snapshotRepository>
   </distributionManagement>
   
