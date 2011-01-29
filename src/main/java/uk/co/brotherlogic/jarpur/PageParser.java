@@ -19,114 +19,102 @@ import uk.co.brotherlogic.jarpur.replacers.SimpleReplacer;
 public class PageParser
 {
 
-	private final Pattern elementFinder = Pattern.compile("(\\%\\%.*?\\%\\%)");
+   private final Pattern elementFinder = Pattern.compile("(\\%\\%.*?\\%\\%)");
 
-	public Replacer parsePage(Object ref, String pageText)
-	{
+   public Replacer parsePage(Object ref, String pageText)
+   {
 
-		Replacer allReplacements = new ContainerReplacer();
+      Replacer allReplacements = new ContainerReplacer();
 
-		Matcher matcher = elementFinder.matcher(pageText);
-		Map<Integer, String> typeMap = new TreeMap<Integer, String>();
-		List<Integer> startList = new LinkedList<Integer>();
-		while (matcher.find())
-		{
-			typeMap.put(matcher.start(), matcher.group(1));
-			startList.add(matcher.start());
-		}
+      Matcher matcher = elementFinder.matcher(pageText);
+      Map<Integer, String> typeMap = new TreeMap<Integer, String>();
+      List<Integer> startList = new LinkedList<Integer>();
+      while (matcher.find())
+      {
+         typeMap.put(matcher.start(), matcher.group(1));
+         startList.add(matcher.start());
+      }
 
-		int i = 0;
-		int startPoint = 0;
-		while (i < typeMap.keySet().size())
-		{
-			allReplacements.addReplacer(new PlainReplacer(pageText.substring(
-					startPoint, startList.get(i))));
-			startPoint = startList.get(i);
+      int i = 0;
+      int startPoint = 0;
+      while (i < typeMap.keySet().size())
+      {
+         allReplacements.addReplacer(new PlainReplacer(pageText.substring(startPoint,
+               startList.get(i))));
+         startPoint = startList.get(i);
 
-			// First determine if this is an ended type of list
-			String paramText = typeMap.get(startList.get(i));
-			String firstParam = paramText.substring(2, paramText.length() - 2)
-					.split("\\s+")[0];
+         // First determine if this is an ended type of list
+         String paramText = typeMap.get(startList.get(i));
+         String firstParam = paramText.substring(2, paramText.length() - 2).split("\\s+")[0];
 
-			boolean ender = false;
-			for (String paramTexts : typeMap.values())
-			{
-				if (paramTexts.startsWith("%%end" + firstParam))
-					ender = true;
-			}
+         boolean ender = false;
+         for (String paramTexts : typeMap.values())
+         {
+            if (paramTexts.startsWith("%%end" + firstParam))
+               ender = true;
+         }
 
-			if (ender)
-			{
-				// Find the end point
-				int foundCount = 1;
-				for (int j = i + 1; j < startList.size(); j++)
-				{
-					if (typeMap.get(startList.get(j)).startsWith(
-							"%%" + firstParam))
-						foundCount++;
-					if (typeMap.get(startList.get(j)).startsWith(
-							"%%end" + firstParam))
-						foundCount--;
+         if (ender)
+         {
+            // Find the end point
+            int foundCount = 1;
+            for (int j = i + 1; j < startList.size(); j++)
+            {
+               if (typeMap.get(startList.get(j)).startsWith("%%" + firstParam))
+                  foundCount++;
+               if (typeMap.get(startList.get(j)).startsWith("%%end" + firstParam))
+                  foundCount--;
 
-					if (foundCount == 0)
-					{
-						System.err.println("FIRST_PARAM = " + firstParam);
-						if (firstParam.startsWith("for"))
-						{
-							allReplacements.addReplacer(new ForReplacer(
-									paramText, parsePage(ref, pageText
-											.substring(startPoint
-													+ paramText.length() + 4,
-													startList.get(j)))));
+               if (foundCount == 0)
+               {
+                  if (firstParam.startsWith("for"))
+                  {
+                     allReplacements.addReplacer(new ForReplacer(paramText, parsePage(ref,
+                           pageText.substring(startPoint + paramText.length(), startList.get(j)))));
 
-							startPoint = startList.get(j)
-									+ "%%endfor%%".length();
-						} else if (firstParam.startsWith("if"))
-						{
-							System.err.println("FOUND IF");
-							allReplacements.addReplacer(new IfReplacer(
-									paramText, parsePage(ref, pageText
-											.substring(startPoint
-													+ paramText.length(),
-													startList.get(j)))));
+                     startPoint = startList.get(j) + "%%endfor%%".length();
 
-							startPoint = startList.get(j)
-									+ "%%endif%%".length();
-						} else
-							System.err.println("Unknown: " + paramText);
-						i = j;
-						break;
+                  }
+                  else if (firstParam.startsWith("if"))
+                  {
 
-					}
-				}
-			} else
-			{
-				allReplacements.addReplacer(new SimpleReplacer(paramText
-						.substring(2, paramText.length() - 2)));
-				startPoint += paramText.length();
-			}
+                     allReplacements.addReplacer(new IfReplacer(paramText, parsePage(ref,
+                           pageText.substring(startPoint + paramText.length(), startList.get(j)))));
 
-			i++;
-		}
+                     startPoint = startList.get(j) + "%%endif%%".length();
+                  }
+                  else
+                     System.err.println("Unknown: " + paramText);
+                  i = j;
+                  break;
 
-		allReplacements.addReplacer(new PlainReplacer(pageText
-				.substring(startPoint)));
+               }
+            }
+         }
+         else
+         {
+            allReplacements.addReplacer(new SimpleReplacer(paramText.substring(2,
+                  paramText.length() - 2)));
+            startPoint += paramText.length();
+         }
 
-		return allReplacements;
-	}
+         i++;
+      }
 
-	public static void main(String[] args) throws Exception
-	{
-		String pageText = "";
-		BufferedReader reader = new BufferedReader(
-				new FileReader(
-						"/Users/simon/local/code/jarpur/src/main/java/uk/co/brotherlogic/mdbweb/HomePage.html"));
-		for (String line = reader.readLine(); line != null; line = reader
-				.readLine())
-			pageText += line;
+      allReplacements.addReplacer(new PlainReplacer(pageText.substring(startPoint)));
 
-		PageParser parser = new PageParser();
-		Replacer fullPage = parser.parsePage(null, pageText);
-		fullPage.print("");
-	}
+      return allReplacements;
+   }
+
+   public static void main(String[] args) throws Exception
+   {
+      String pageText = "";
+      BufferedReader reader = new BufferedReader(new FileReader(
+            "/Users/simon/local/code/jarpur/src/main/java/uk/co/brotherlogic/mdbweb/HomePage.html"));
+      for (String line = reader.readLine(); line != null; line = reader.readLine())
+         pageText += line;
+
+      PageParser parser = new PageParser();
+      Replacer fullPage = parser.parsePage(null, pageText);
+   }
 }

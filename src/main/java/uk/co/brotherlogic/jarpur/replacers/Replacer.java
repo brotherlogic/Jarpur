@@ -6,120 +6,148 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-public abstract class Replacer {
+public abstract class Replacer
+{
 
-	private final List<Replacer> replacers = new LinkedList<Replacer>();
-	private Object refObj;
+   private final List<Replacer> replacers = new LinkedList<Replacer>();
+   private Object refObj;
 
-	public List<Replacer> getReplacers() {
-		return replacers;
-	}
+   public List<Replacer> getReplacers()
+   {
+      return replacers;
+   }
 
-	public void addReplacer(Replacer add) {
-		replacers.add(add);
-	}
+   public void addReplacer(Replacer add)
+   {
+      replacers.add(add);
+   }
 
-	public void print(String tabs) {
-		System.out.println(tabs + this);
-		for (Replacer repl : replacers) {
-			repl.print(tabs + "\t");
-		}
-	}
+   public void print()
+   {
+      for (Replacer rep : replacers)
+      {
+         System.err.println(rep.getName());
+      }
+   }
 
-	public String process(Object ref, Map<String, Object> objectMap) {
-		refObj = ref;
-		StringBuffer buffer = new StringBuffer();
-		for (Replacer repl : replacers) {
-			buffer.append(repl.process(ref, objectMap));
-		}
-		return buffer.toString();
-	}
+   protected abstract String getName();
 
-	@Override
-	public String toString() {
-		return "FullPage: " + this.getClass();
-	}
+   public String process(Object ref, Map<String, Object> objectMap)
+   {
+      refObj = ref;
+      StringBuffer buffer = new StringBuffer();
+      for (Replacer repl : replacers)
+      {
+         buffer.append(repl.process(ref, objectMap));
+      }
+      return buffer.toString();
+   }
 
-	protected void setRefObj(Object obj) {
-		refObj = obj;
-	}
+   @Override
+   public String toString()
+   {
+      return "FullPage: " + this.getClass();
+   }
 
-	protected Object resolveMethodWithParameter(Object obj, String methodName,
-			Map<String, Object> paramMap) {
+   protected void setRefObj(Object obj)
+   {
+      refObj = obj;
+   }
 
-		System.err.println("RESOLVE WITH PARAM = " + methodName + " => " + obj);
+   protected Object resolveMethodWithParameter(Object obj, String methodName,
+         Map<String, Object> paramMap)
+   {
 
-		int firstBracket = methodName.indexOf('(');
-		String method = methodName.substring(0, firstBracket);
-		String[] parameters = methodName.substring(firstBracket + 1,
-				methodName.length() - 1).split(",");
+      int firstBracket = methodName.indexOf('(');
+      String method = methodName.substring(0, firstBracket);
+      String[] parameters = methodName.substring(firstBracket + 1, methodName.length() - 1).split(
+            ",");
 
-		Method[] methodArr = obj.getClass().getMethods();
-		for (Method method2 : methodArr) {
-			if (method2.getName().equals(method)) {
-				try {
-					Object[] objArr = new Object[parameters.length];
-					for (int i = 0; i < objArr.length; i++) {
-						objArr[i] = resolve(parameters[i], paramMap);
-						System.err.println("PARAM #" + i + ": " + objArr[i]
-								+ " from " + parameters[i]);
-					}
+      Method[] methodArr = obj.getClass().getMethods();
+      for (Method method2 : methodArr)
+      {
+         if (method2.getName().equals(method))
+         {
+            try
+            {
+               Object[] objArr = new Object[parameters.length];
+               for (int i = 0; i < objArr.length; i++)
+               {
+                  objArr[i] = resolve(parameters[i], paramMap);
+               }
 
-					return method2.invoke(obj, objArr);
-				} catch (IllegalArgumentException e) {
-					e.printStackTrace();
-				} catch (IllegalAccessException e) {
-					e.printStackTrace();
-				} catch (InvocationTargetException e) {
-					e.printStackTrace();
-				}
-			}
-		}
+               return method2.invoke(obj, objArr);
+            }
+            catch (IllegalArgumentException e)
+            {
+               e.printStackTrace();
+            }
+            catch (IllegalAccessException e)
+            {
+               e.printStackTrace();
+            }
+            catch (InvocationTargetException e)
+            {
+               e.printStackTrace();
+            }
+         }
+      }
 
-		return null;
-	}
+      return null;
+   }
 
-	protected Object resolveMethod(Object obj, String methodName,
-			Map<String, Object> paramMap) {
+   protected Object resolveMethod(Object obj, String methodName, Map<String, Object> paramMap)
+   {
+      if (methodName.contains("("))
+         return resolveMethodWithParameter(obj, methodName, paramMap);
+      try
+      {
+         Class cls = obj.getClass();
+         Method m = cls.getMethod(methodName, new Class[0]);
+         Object ret = m.invoke(obj, new Object[0]);
+         return ret;
+      }
+      catch (NoSuchMethodException e)
+      {
+         e.printStackTrace();
+      }
+      catch (IllegalArgumentException e)
+      {
+         e.printStackTrace();
+      }
+      catch (IllegalAccessException e)
+      {
+         e.printStackTrace();
+      }
+      catch (InvocationTargetException e)
+      {
+         e.printStackTrace();
+      }
 
-		System.err.println("RESOLVING: " + methodName + " with " + obj);
+      return null;
+   }
 
-		if (methodName.contains("("))
-			return resolveMethodWithParameter(obj, methodName, paramMap);
-		try {
-			Class cls = obj.getClass();
-			Method m = cls.getMethod(methodName, new Class[0]);
-			Object ret = m.invoke(obj, new Object[0]);
-			return ret;
-		} catch (NoSuchMethodException e) {
-			e.printStackTrace();
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
-		}
+   protected Object resolve(String replace, Map<String, Object> paramMap)
+   {
 
-		return null;
-	}
+      String[] elems = replace.split("\\.");
+      if (paramMap.containsKey(elems[0]))
+      {
+         Object obj = paramMap.get(elems[0]);
+         for (int i = 1; i < elems.length; i++)
+         {
+            obj = resolveMethod(obj, elems[i], paramMap);
+         }
+         return obj;
+      }
+      else
+      {
+         // Try to resolve using the base
+         Object obj = resolveMethod(refObj, replace, paramMap);
+         if (obj != null)
+            return obj;
+      }
 
-	protected Object resolve(String replace, Map<String, Object> paramMap) {
-
-		String[] elems = replace.split("\\.");
-		if (paramMap.containsKey(elems[0])) {
-			Object obj = paramMap.get(elems[0]);
-			for (int i = 1; i < elems.length; i++) {
-				obj = resolveMethod(obj, elems[i], paramMap);
-			}
-			return obj;
-		} else {
-			// Try to resolve using the base
-			Object obj = resolveMethod(refObj, replace, paramMap);
-			if (obj != null)
-				return obj;
-		}
-
-		return "UNABLE TO REPLACE";
-	}
+      return "UNABLE TO REPLACE";
+   }
 }

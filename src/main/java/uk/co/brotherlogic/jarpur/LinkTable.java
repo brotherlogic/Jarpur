@@ -1,29 +1,50 @@
 package uk.co.brotherlogic.jarpur;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
-import java.util.regex.Matcher;
+import java.util.Map.Entry;
 import java.util.regex.Pattern;
 
 public class LinkTable {
 
-	public static String add = "/jarpur/";
 	Map<String, String> links = new TreeMap<String, String>();
 
-	public LinkTable(Properties props) {
+	private static LinkTable singleton;
 
-		for (Object key : props.keySet()) {
-			String classname = key.toString();
-			links.put(classname, props.getProperty(classname));
+	public static LinkTable getLinkTable() {
+		if (singleton == null)
+			singleton = new LinkTable("");
+		return singleton;
+	}
+
+	public static LinkTable getLinkTable(String base) {
+		if (singleton == null)
+			singleton = new LinkTable(base);
+		return singleton;
+	}
+
+	private LinkTable(String base) {
+		Properties properties = new Properties();
+		try {
+			properties.load(new FileInputStream(base + "props/"
+					+ new File("mapping.properties")));
+			for (Entry<Object, Object> entry : properties.entrySet()) {
+				String ref = entry.getValue().toString();
+				links.put(entry.getKey().toString(), ref);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 
 	public String resolveLink(Object o) {
 		String classname = o.getClass().getCanonicalName();
-
 		if (links.containsKey(classname)) {
 			return resolveLink(o, links.get(classname));
 		}
@@ -33,19 +54,49 @@ public class LinkTable {
 	Pattern objPattern = Pattern.compile("\\%\\%(.*?)\\%\\%");
 
 	private String resolveLink(Object o, String ref) {
-		StringBuffer buffer = new StringBuffer(ref);
+		try {
+			Class cls = Class.forName(ref);
+			Page pg = (Page) cls.getConstructor(new Class[0]).newInstance(
+					new Object[0]);
+			String params = pg.linkParams(o);
 
-		Matcher matcher = objPattern.matcher(ref);
-		if (matcher.find()) {
-			int start = matcher.start(1);
-			int end = matcher.end(1);
+			String nref = ref
+					.substring(JarpurProperties.get("base").length() + 1);
 
-			String methodName = ref.substring(start, end);
-			String rep = resolveMethod(o, methodName);
-			buffer.replace(start - 2, end + 2, rep);
-			return add + buffer.toString();
-		} 
-		return null;
+			// Convert to a link
+			nref.replace(".", "/");
+			// Remove any Default
+			if (nref.endsWith("Default"))
+				nref = nref
+						.substring(0, nref.length() - "Default".length() - 1);
+			else if (ref.endsWith("Default/"))
+				nref = nref.substring(0, nref.length() - "Default/".length()
+						- 1);
+
+			return JarpurProperties.get("web") + "/" + nref + "/" + params;
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InstantiationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return "";
+
 	}
 
 	protected String resolveMethod(Object obj, String methodName) {

@@ -7,49 +7,47 @@ import java.util.Map;
 
 import uk.co.brotherlogic.jarpur.LinkTable;
 
-public class SimpleReplacer extends Replacer {
+public class SimpleReplacer extends Replacer
+{
 
-	private static LinkTable lTable;
+   @Override
+   public String process(Object ref, Map<String, Object> objectMap)
+   {
 
-	public static void setLinkTable(LinkTable table) {
-		lTable = table;
-	}
+      setRefObj(ref);
 
-	@Override
-	public String process(Object ref, Map<String, Object> objectMap) {
+      if (replacement.startsWith("link"))
+      {
+         return LinkTable.getLinkTable().resolveLink(resolve(replacement.substring(5), objectMap));
+      }
 
-		System.err.println("PROC: " + lTable);
+      Object obj = resolve(replacement, objectMap);
 
-		if (replacement.startsWith("link:resource"))
-			return LinkTable.add + replacement.substring(5);
+      if (obj instanceof Calendar)
+      {
+         DateFormat df = new SimpleDateFormat("dd/MM/yy");
+         return df.format(((Calendar) obj).getTime());
+      }
 
-		if (replacement.startsWith("link")) {
-			System.err.println("LINK: " + replacement.substring(5) + " => "
-					+ resolve(replacement.substring(5), objectMap) + " give "
-					+ lTable);
-			return lTable.resolveLink(resolve(replacement.substring(5),
-					objectMap));
-		}
+      return obj.toString();
+   }
 
-		System.err.println(replacement + " => " + objectMap.size());
-		Object obj = resolve(replacement, objectMap);
+   @Override
+   protected String getName()
+   {
+      return "Simple: " + replacement;
+   }
 
-		if (obj instanceof Calendar) {
-			DateFormat df = new SimpleDateFormat("dd/MM/yy");
-			return df.format(((Calendar) obj).getTime());
-		}
+   private final String replacement;
 
-		return obj.toString();
-	}
+   public SimpleReplacer(String replacerText)
+   {
+      replacement = replacerText;
+   }
 
-	private final String replacement;
-
-	public SimpleReplacer(String replacerText) {
-		replacement = replacerText;
-	}
-
-	@Override
-	public String toString() {
-		return "Simple: " + replacement;
-	}
+   @Override
+   public String toString()
+   {
+      return "Simple: " + replacement;
+   }
 }
