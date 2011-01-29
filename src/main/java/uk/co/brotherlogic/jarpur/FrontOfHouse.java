@@ -136,6 +136,8 @@ public class FrontOfHouse extends HttpServlet
       }
       catch (Exception e)
       {
+         if (Debug.isDebug())
+            e.printStackTrace();
          // Pass
          // e.printStackTrace();
       }
