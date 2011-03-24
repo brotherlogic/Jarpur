@@ -31,7 +31,7 @@ public class JarpurProperties
       properties = new Properties();
       try
       {
-         if (context != null)
+         if (context != null && context.getRealPath("WEB-INF/props/web.properties") != null)
          {
             properties.load(new FileInputStream(new File(context
                   .getRealPath("WEB-INF/props/web.properties"))));
