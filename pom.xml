@@ -3,7 +3,7 @@
   <groupId>uk.co.brotherlogic.jarpur</groupId>
   <artifactId>jarpur</artifactId>
   <packaging>jar</packaging>
-  <version>0.10-SNAPSHOT</version>
+  <version>0.10</version>
   <name>jarpur</name>
   <url>http://maven.apache.org</url>
   
